@@ -1,0 +1,40 @@
+{
+ "name": "smoke_archA",
+ "model": {
+  "arch": "A",
+  "vocab_size": 32000,
+  "d_model": 1024,
+  "n_layers": 16,
+  "n_heads": 16,
+  "ffn_hidden": 2816,
+  "max_seq_len": 1536
+ },
+ "data": {
+  "tokenizer": "legal_bpe_32k",
+  "seq_len": 1536,
+  "mix": {
+   "supreme_court": 0.2,
+   "high_courts": 0.42,
+   "tribunals": 0.3,
+   "acts": 0.08
+  }
+ },
+ "train": {
+  "total_tokens": 20000000,
+  "batch_tokens": 24576,
+  "micro_batch": 8,
+  "lr": 0.0006,
+  "min_lr_frac": 0.0,
+  "warmup_steps": 5,
+  "decay_frac": 0.2,
+  "weight_decay": 0.1,
+  "beta2": 0.95,
+  "grad_clip": 1.0,
+  "eval_every": 1000,
+  "save_every": 100000,
+  "val_windows": 8,
+  "log_every": 10,
+  "compile": false,
+  "seed": 0
+ }
+}

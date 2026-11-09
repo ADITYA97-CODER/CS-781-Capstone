@@ -1,0 +1,48 @@
+{
+ "name": "archD_4B_docmask",
+ "model": {
+  "arch": "D",
+  "vocab_size": 32000,
+  "d_model": 640,
+  "n_layers": 12,
+  "n_heads": 10,
+  "n_kv_heads": 2,
+  "ffn_hidden": 1728,
+  "max_seq_len": 1536,
+  "window": 512,
+  "global_every": 4,
+  "doc_mask": true,
+  "eos_id": 0
+ },
+ "data": {
+  "tokenizer": "legal_bpe_32k",
+  "seq_len": 1536,
+  "mix": {
+   "supreme_court": 0.3,
+   "high_courts": 0.4,
+   "tribunals": 0.2,
+   "acts": 0.1
+  }
+ },
+ "train": {
+  "continue_from": "runs/archD_sliding_72M_4B/ckpt_best.pt",
+  "continue_tokens": 500000000,
+  "batch_tokens": 491520,
+  "micro_batch": 32,
+  "lr": 0.0003,
+  "min_lr_frac": 0.0,
+  "warmup_steps": 100,
+  "decay_frac": 1.0,
+  "weight_decay": 0.1,
+  "beta2": 0.95,
+  "grad_clip": 1.0,
+  "eval_every": 100,
+  "save_every": 250,
+  "val_windows": 64,
+  "val_boundary_masked": true,
+  "log_every": 10,
+  "compile": true,
+  "seed": 0,
+  "early_stop_patience": 0
+ }
+}

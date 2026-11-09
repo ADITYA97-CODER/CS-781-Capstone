@@ -3,8 +3,9 @@
 **Aditya Ojha, roll number 252330601, IIT Kanpur** · Codabench username `a_252330601`
 
 A self-hosted legal-NLP system for Indian court judgments. A compact decoder-only language model (144.6M parameters) is
-pretrained from scratch on the provided legal corpus and then adapted to six downstream tasks. This repository holds the
+pretrained from scratch on the provided legal corpus and then adapted to six downstream tasks. The phase folders hold the
 code of the best-scoring submission of each of the seven phases, with one training script and one inference script per phase.
+`experiments/` holds the code of the other submissions, and every submission is listed under [All submissions by phase](#all-submissions-by-phase).
 
 ## Best submission per phase
 
@@ -27,6 +28,7 @@ phase2/ ... phase7/                  one folder per task
   models.sh                          the exact members and flags of the best submission (Phases 2-7)
   train.sh                           trains every member
   inference.sh                       builds the submission from trained weights
+experiments/                         code of the other experiments and submissions
 ```
 
 Phases share code through their folders: `phase1/models` is the backbone used everywhere, `phase2/peft.py` holds the
@@ -205,6 +207,111 @@ the full query and its citation-context sentences; date consistency; and citatio
 **Fusion (`ltr.py`).** A first logistic regression is fit on the training queries over lexical and metadata features. A second, fit with
 5-fold cross-validation over the dev queries, combines its logit with the dense score features, and the top 7 are written.
 `inference.sh` runs this fitting step because it needs the dense embeddings.
+
+---
+
+## All submissions by phase
+
+Scores are the official Codabench test scores. Names are the folders under `outputs/` or the run names under `runs_pN/`; the recorded
+arguments of each run are in `experiments/run_commands/`. The best submission of each phase is in bold, and "–" means no score was recorded.
+
+### Phase 1 (BERTScore F1)
+
+| Submission | Method | Score |
+|---|---|---|
+| GPT-2 starter (three uploads) | Fine-tuned course starter checkpoint | 0.8003, 0.8006, 0.8015 |
+| Llama, single sample | Fine-tuned pretrained Llama, early baseline | 0.8348 |
+| Llama, MBR ×4 | Same model, MBR over 4 samples | 0.8394 |
+| Arch D 2B, single sample | 72M sliding-window decoder, 2B tokens | 0.8303 |
+| `mbr_docmask` | Arch D with document masking, MBR ×8 | 0.8420 |
+| `fact_decoding/official/cad_a0.5` | Arch D + context-aware decoding, MBR ×8 | 0.8428 |
+| `mbr_archE/official` | Arch E, MBR ×8 | 0.8450 |
+| `archE_steer_official` | Arch E + header and citation steering + penalty-aware rerank, MBR ×8 | 0.8447 |
+| `cad_official_EF/archE`, `archF` | Arch E and Arch F + context-aware decoding + loop filter + rerank, MBR ×8 | 0.8473 and 0.8472 (order not recorded) |
+| **`masked_sft/official/pooled16`** | **Pooled MBR ×16: Arch E + masked-SFT Arch E, steering, rerank** | **0.8474** |
+
+### Phase 2 (strict span macro-F1)
+
+| Submission | Method | Score |
+|---|---|---|
+| `e_sftup_full_ens2_prop` | Full fine-tuning, 2 seeds, BIO, document-level propagation | 0.6249 |
+| `e_sftup_lorma_s0` | LoRMA+, 1 seed, BIO | 0.6154 |
+| `e_sftup_lorma_ens2` | LoRMA+, 2 seeds, BIO | 0.6546 |
+| `e_sftup_lorma_ens4` | LoRMA+, 4 seeds, BIO | 0.6607 |
+| `e_sftup_lorma_flert_ens2` | LoRMA+ with FLERT document-context windows, 2 seeds | 0.6534 |
+| `bio_ens4_doc_flert` | LoRMA+ document windows ×2 + FLERT ×2 | 0.6671 |
+| `e_sftup_lorma_kd_s0` | KD from the 4-model ensemble into one LoRMA+ student | 0.6391 |
+| `e_sftup_lorma_kd_ens2` | KD students, 2 seeds | 0.6375 |
+| `combo_lorma_bio_span` | Per-label combination: BIO ×2 + span head ×2 | 0.6730 |
+| `combo_lorma_flert_span` | Per-label combination: FLERT BIO ×2 + span head ×2 | 0.6672 |
+| `combo_bio4_span` | Per-label combination: BIO ×4 + span head ×2 | 0.6801 |
+| **`combo_bio6_span2`** | **Per-label combination: BIO ×6 + span head ×2** | **0.6938** |
+
+### Phase 3 (macro-F1 over 13 roles)
+
+| Submission | Method | Score |
+|---|---|---|
+| `e_full_ctx` | Full fine-tuning, 1,024-token context, pooled linear head | 0.5380 |
+| `e_full_laya` | Full fine-tuning, per-sentence marker tokens, MLP head, logit adjustment | 0.5172 |
+| `e_full_laya_nomarker` | Full fine-tuning, pooled sentences, MLP head, logit adjustment | 0.5750 |
+| `e_lorma_ctx` | LoRMA+, pooled linear head | 0.5555 |
+| `e_lorma_mlp_la` | LoRMA+, MLP head, logit adjustment | 0.5286 |
+| `laya_nm_all_ens2` | Marker-free configuration on all 90 documents, 2 seeds | 0.5264 |
+| `laya_nm_all_ens4` | Same, 4 seeds | 0.5205 |
+| `probe_ens4_plus_best_PO` | 4-seed ensemble with PrecedentOverruled labels from the 0.5750 file | 0.5301 |
+| `cvhalves_wide3` | Wide-context 3-configuration ensemble, cross-validation halves | 0.5587 |
+| `all_wide3` | Wide-context 3-configuration ensemble, all 90 documents | 0.5689 |
+| `all_wide3_5m` | Same, 5 models | 0.5648 |
+| `all_wide3_9m` | Same, 8 models | 0.5655 |
+| **`lastday/cand_cvbest_dissentv2`** | **`all_wide3` + Dissent rule** | **0.5930** |
+
+### Phase 4 (macro-F1)
+
+| Submission | Method | Score |
+|---|---|---|
+| `e_lorma_hier4x1k` | Arch E LoRMA+, last 4 × 1,024 chunks | 0.8088 |
+| `e_lorma_last2k` | Arch E LoRMA+, last 2,048 tokens | 0.8119 |
+| `f_lorma_hier4x1k` | Arch F LoRMA+, 4 chunks | 0.8132 |
+| `e_full_hier4x1k` | Arch E full fine-tuning, 4 chunks | 0.8199 |
+| `f_full_hier4x1k` | Arch F full fine-tuning, 4 chunks | 0.8021 |
+| `e_lorma_hier8x1k` | Arch E LoRMA+, 8 chunks | 0.8326 |
+| `ens6_all` | 6-model equal-weight ensemble | 0.8398 |
+| `ens7_with8` | 7-model equal-weight ensemble | 0.8404 |
+| **`ens7_with8_w3`** | **7-model ensemble, 8-chunk model at weight 3** | **0.8424** |
+
+### Phase 5 (macro-F1 over 100 statutes)
+
+| Submission | Method | Score |
+|---|---|---|
+| `e_lorma_spread8` | Arch E LoRMA+, attention pooling | 0.4283 |
+| `f_lorma_spread8` | Arch F LoRMA+, attention pooling | 0.4292 |
+| `e_lwan_asl` | Arch E LoRMA+, label-wise attention, asymmetric loss | 0.4436 |
+| `e_lorma_lwan` | Arch E LoRMA+, label-wise attention, binary cross-entropy | 0.4520 |
+| **`ens5_lwan2`** | **5-model weighted ensemble with per-label thresholds** | **0.4635** |
+
+### Phase 6 (BERTScore F1)
+
+| Submission | Method | Score |
+|---|---|---|
+| `e_full_ht4k` | Arch E full fine-tuning, beam 4 | 0.8494 |
+| `f_lorma_ht4k` | Arch F LoRMA+, beam 4 | 0.8515 |
+| `e_lora_ht4k` | Arch E LoRA, beam 4 | 0.8525 |
+| `e_lorma_ht4k` | Arch E LoRMA+, beam 4 | 0.8530 |
+| `e_houlsby_ht4k` | Arch E Houlsby adapters, beam 4 | – |
+| `kd_e10_from_lorma` | 10-layer KD student from Arch E LoRMA+, beam 4 | – |
+| **`mbr6_b4_test`** | **Cross-system MBR over the 6 models above** | **0.8550** |
+
+### Phase 7 (Micro-F1@7)
+
+| Submission | Method | Score |
+|---|---|---|
+| `8_ArchE_KD_10layerStudent` | KD student bi-encoder + LTR | 0.5109 |
+| `5_ArchE_FullFT` | Arch E full fine-tuning bi-encoder + LTR | 0.5115 |
+| `7_ArchE_LoRMA` | Arch E LoRMA+ bi-encoder + LTR | 0.5127 |
+| `0_Ensemble_EF_ctx_CE` | Arch E + F context-query bi-encoders + cross-encoder + LTR | 0.5127 |
+| `3_ArchE_LoRMA_CrossEncoder` | Arch E LoRMA+ cross-encoder reranker + LTR | 0.5145 |
+| `2_ArchE_LoRMA_ctxQuery` | Arch E LoRMA+, citation-context queries + LTR | 0.5162 |
+| **`1_ArchF_LoRMA`** | **Arch F LoRMA+ bi-encoder + LTR** | **0.5162** |
 
 ---
 
