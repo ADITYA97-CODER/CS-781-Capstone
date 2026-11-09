@@ -1,0 +1,40 @@
+{
+ "name": "sft_archE_v2_upweight",
+ "init_ckpt": "runs/archE_diff_145M/ckpt_best.pt",
+ "data": {
+  "pairs": "data/sft/masked_sft_v2",
+  "replay": "data/sft/replay_v1",
+  "tokenizer": "legal_bpe_32k",
+  "replay_mix": {
+   "supreme_court": 0.3,
+   "high_courts": 0.4,
+   "tribunals": 0.2,
+   "acts": 0.1
+  }
+ },
+ "sft": {
+  "mask_mode": "unsupported+upweight",
+  "supported_weight": 2.0,
+  "replay_ratio": 0.3,
+  "replay_basis": "loss_tokens"
+ },
+ "train": {
+  "epochs": 1,
+  "row_len": 3072,
+  "rows_per_step": 64,
+  "micro_rows": 8,
+  "lr": 0.0001,
+  "warmup_frac": 0.03,
+  "min_lr_frac": 0.1,
+  "schedule": "cosine",
+  "weight_decay": 0.1,
+  "beta2": 0.95,
+  "grad_clip": 1.0,
+  "eval_every": 50,
+  "pretrain_val_windows": 32,
+  "log_every": 10,
+  "compile": true,
+  "seed": 0,
+  "snapshot_every": 175
+ }
+}

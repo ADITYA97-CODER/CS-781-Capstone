@@ -1,0 +1,54 @@
+{
+ "name": "archE_diff_145M",
+ "model": {
+  "arch": "E",
+  "vocab_size": 32000,
+  "vocab_pad_to": 128,
+  "d_model": 768,
+  "n_layers": 20,
+  "n_heads": 12,
+  "n_kv_heads": 4,
+  "head_dim": 64,
+  "ffn_hidden": 1920,
+  "max_seq_len": 1536,
+  "window": 512,
+  "layer_pattern": "alternate",
+  "diff_layers": "all",
+  "qk_norm": true,
+  "tie_embeddings": true,
+  "doc_mask": true,
+  "eos_id": 0
+ },
+ "data": {
+  "tokenizer": "legal_bpe_32k",
+  "seq_len": 1536,
+  "mix": {
+   "supreme_court": 0.3,
+   "high_courts": 0.4,
+   "tribunals": 0.2,
+   "acts": 0.1
+  }
+ },
+ "train": {
+  "total_tokens": 4000000000,
+  "batch_tokens": 491520,
+  "micro_batch": 20,
+  "lr": 0.002,
+  "min_lr_frac": 0.1,
+  "warmup_steps": 122,
+  "decay_frac": 0.2,
+  "weight_decay": 0.1,
+  "wd_linear_only": true,
+  "beta2": 0.95,
+  "grad_clip": 1.0,
+  "eval_every": 250,
+  "save_every": 500,
+  "val_windows": 64,
+  "val_boundary_masked": true,
+  "log_every": 10,
+  "compile": true,
+  "prefetch": 2,
+  "seed": 0,
+  "early_stop_patience": 0
+ }
+}

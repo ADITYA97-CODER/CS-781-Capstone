@@ -1,0 +1,13 @@
+data/
+runs/
+runs_p*/
+outputs/
+*.pt
+*.zip
+prediction.json
+*.parquet
+*.npz
+*.npy
+__pycache__/
+*.pyc
+.env

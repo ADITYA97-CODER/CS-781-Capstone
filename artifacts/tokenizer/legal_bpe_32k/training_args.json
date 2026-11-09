@@ -1,0 +1,7 @@
+{
+ "vocab_size": 32000,
+ "sample_words": 300000000,
+ "mix": "supreme_court=0.25,high_courts=0.40,tribunals=0.20,acts=0.15",
+ "min_frequency": 5,
+ "seed": 42
+}
